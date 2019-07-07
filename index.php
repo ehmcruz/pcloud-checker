@@ -42,6 +42,9 @@ try {
 //			$mf = $info->metadata;
 			
 			echo "{$item->name} ({$item->size} bytes)";
+
+			if ($item->name == "checksum.sha1")
+				echo " <a href=\"check.php?checksum_file_id={$item->fileid}&folderid={$folderid}\">Hash check</a>";
 		}
 		
 		echo "</li>\n";
