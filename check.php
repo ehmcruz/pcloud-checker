@@ -43,19 +43,24 @@ function load_hash_file ($checksum_file_id)
 	return $r;
 }
 
+function cmp_flist ($a, $b)
+{
+    return strcmp($a->name, $b->name);
+}
+
 function cmp_hash_from_file ($hashes, $fname, $hash)
 {
 	foreach ($hashes as $item) {
 		if ($item['fname'] == $fname) {
 			if ($item['hash'] == $hash)
-				echo "Hash OK";
+				echo "<font color=\"#28AD29\">Hash OK</font>";
 			else
-				echo "Hash FAIL";
+				echo "<font color=\"#F54739\">Hash FAIL</font>";
 			return;
 		}
 	}
 
-	echo "Hash Not Found";
+	echo "<font color=\"#F039F5\">Hash Not Found</font>";
 }
 
 try {
@@ -64,8 +69,32 @@ try {
 	$pCloudFolder = new pCloud\Folder();
 
 	$meta = $pCloudFolder->getMetadata($folderid)->metadata;
+
+	echo "Folder: {$meta->name}<br><br>\n";
 	
 	$content = $pCloudFolder->getContent($folderid);
+	usort($content, "cmp_flist");
+
+	$has_break = 0;
+	foreach ($hashes as $hi) {
+		$found = 0;
+
+		foreach ($content as $item) {
+			if ($item->name == $hi['fname']) {
+				$found = 1;
+				break;
+			}
+		}
+
+		if (!$found) {
+			$has_break = 1;
+			echo "<font color=\"#F54739\">File not found in pcloud:</font> ".$hi['fname']."<br>\n";
+		}
+	}
+
+	if ($has_break) {
+		echo "<br><br>\n";
+	}
 	
 	foreach ($content as $item) {
 		if (!$item->isfolder) {
