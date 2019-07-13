@@ -48,19 +48,26 @@ function cmp_flist ($a, $b)
     return strcmp($a->name, $b->name);
 }
 
+$allgreen = 1;
+
 function cmp_hash_from_file ($hashes, $fname, $hash)
 {
+	global $allgreen;
+
 	foreach ($hashes as $item) {
 		if ($item['fname'] == $fname) {
 			if ($item['hash'] == $hash)
 				echo "<font color=\"#28AD29\">Hash OK</font>";
-			else
+			else {
 				echo "<font color=\"#F54739\">Hash FAIL</font>";
+				$allgreen = 0;
+			}
 			return;
 		}
 	}
 
 	echo "<font color=\"#F039F5\">Hash Not Found</font>";
+	$allgreen = 0;
 }
 
 try {
@@ -88,6 +95,7 @@ try {
 
 		if (!$found) {
 			$has_break = 1;
+			$allgreen = 0;
 			echo "<font color=\"#F54739\">File not found in pcloud:</font> ".$hi['fname']."<br>\n";
 		}
 	}
@@ -109,6 +117,13 @@ try {
 			}
 		}
 	}
+
+	echo "<br><br>\n";
+	
+	if ($allgreen == 0)
+		echo "<font color=\"#F54739\"><strong>errors found</strong></font>\n";
+	else
+		echo "<font color=\"#28AD29\"><strong>no error found</strong></font>\n";
 } catch (Exception $e) {
 	echo $e->getMessage();
 }
