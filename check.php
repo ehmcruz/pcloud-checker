@@ -18,9 +18,9 @@ $checksum_file_id = (int)$_GET["checksum_file_id"];
 // else
 $type = "sha1";
 
-function load_hash_file ($checksum_file_id)
+function load_hash_file ($pCloudApp, $checksum_file_id)
 {
-	$pCloudHashFile = new pCloud\File();
+	$pCloudHashFile = new pCloud\File($pCloudApp);
 	$pCloudHashFile->download($checksum_file_id, "/tmp/");
 
 	$checksum_file = "/tmp/checksum.sha1";
@@ -71,9 +71,19 @@ function cmp_hash_from_file ($hashes, $fname, $hash)
 }
 
 try {
-	$hashes = load_hash_file($checksum_file_id);
+	$pCloudApp = new pCloud\App();
 
-	$pCloudFolder = new pCloud\Folder();
+	$cred = pCloud\Auth::getAuth($credentialPath);
+
+	$access_token = $cred['access_token'];
+	$locationid = 1;
+
+	$pCloudApp->setAccessToken($access_token);
+	$pCloudApp->setLocationId($locationid);
+
+	$hashes = load_hash_file($pCloudApp, $checksum_file_id);
+
+	$pCloudFolder = new pCloud\Folder($pCloudApp);
 
 	$meta = $pCloudFolder->getMetadata($folderid)->metadata;
 
@@ -106,7 +116,7 @@ try {
 	
 	foreach ($content as $item) {
 		if (!$item->isfolder) {
-			$pCloudFile = new pCloud\File();
+			$pCloudFile = new pCloud\File($pCloudApp);
 			$info = $pCloudFile->getInfo($item->fileid);
 			$mf = $info->metadata;
 			

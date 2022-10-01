@@ -17,7 +17,17 @@ else
 	$type = "sha1";
 
 try {
-	$pCloudFolder = new pCloud\Folder();
+	$pCloudApp = new pCloud\App();
+
+	$cred = pCloud\Auth::getAuth($credentialPath);
+
+	$access_token = $cred['access_token'];
+	$locationid = 1;
+
+	$pCloudApp->setAccessToken($access_token);
+	$pCloudApp->setLocationId($locationid);
+
+	$pCloudFolder = new pCloud\Folder($pCloudApp);
 
 	$meta = $pCloudFolder->getMetadata($folderid)->metadata;
 	
@@ -25,7 +35,7 @@ try {
 	
 	foreach ($content as $item) {
 		if (!$item->isfolder) {
-			$pCloudFile = new pCloud\File();
+			$pCloudFile = new pCloud\File($pCloudApp);
 			$info = $pCloudFile->getInfo($item->fileid);
 			$mf = $info->metadata;
 			

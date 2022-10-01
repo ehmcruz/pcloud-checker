@@ -15,7 +15,17 @@ else
 	$folderid = 0;
 
 try {
-	$pCloudFolder = new pCloud\Folder();
+	$pCloudApp = new pCloud\App();
+
+	$cred = pCloud\Auth::getAuth($credentialPath);
+
+	$access_token = $cred['access_token'];
+	$locationid = 1;
+
+	$pCloudApp->setAccessToken($access_token);
+	$pCloudApp->setLocationId($locationid);
+
+	$pCloudFolder = new pCloud\Folder($pCloudApp);
 
 	echo "<ul style=\"list-style-type: none;\">";
 	
